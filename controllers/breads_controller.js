@@ -4,7 +4,11 @@ const breads = express.Router()
 
 //INDEX
 breads.get('/', (req, res) => {
-    res.send(bread)
+    res.render('index', 
+        {
+            breads: bread
+        }
+    )
 })
 
 //SHOW
