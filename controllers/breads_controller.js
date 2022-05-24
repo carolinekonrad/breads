@@ -1,5 +1,4 @@
 const express = require('express')
-const Bread = require('../models/bread')
 const bread = require('../models/bread')
 const breads = express.Router()
 
@@ -22,16 +21,24 @@ breads.get('/new', (req, res) => {
 
 //EDIT
 breads.get('/:indexArray/edit', (req, res) => {
-    res.render('edit', {
-        bread: bread[req.params.indexArray],
-        index: req.params.indexArray
-    })
+    bread.findById(req.params.indexArray)
+        .then(foundBread => {
+            res.render('edit', {
+                bread: foundBread
+            })
+        })
+        .catch(err => {
+            console.log('err', err)
+            res.send('404')
+        })
 })
 
 //SHOW
 breads.get('/:id', (req, res) => {
     bread.findById(req.params.id)
         .then(foundBread => {
+            const bakedBy = foundBread.getBakedBy()
+            console.log(bakedBy)
             res.render('show', {
                 bread: foundBread
             })
@@ -58,20 +65,28 @@ breads.post('/', (req, res) => {
 })
 
 //DELETE
-breads.delete('/:indexArray', (req, res) => {
-    bread.splice(req.params.indexArray, 1)
-    res.status(303).redirect('/breads')
+breads.delete('/:arrayIndex', (req, res) => {
+    bread.findByIdAndDelete(req.params.arrayIndex)
+        .then(deletedBread => {
+            res.status(303).redirect('/breads')
+        })
 })
 
 //UPDATE
 breads.put('/:arrayIndex', (req, res) => {
-    if (req.body.gluten === 'on') {
-        req.body.hasGluten = true
-    } else {
-        req.body.hasGluten = false
+    if(req.body.hasGluten === 'on'){
+        req.body.hasGluten = true;
     }
-    bread[req.params.arrayIndex] = req.body
-    res.redirect(`/breads/${req.params.arrayIndex}`)
+    else{
+        req.body.hasGluten = false;
+    }
+    bread.findByIdAndUpdate(req.params.arrayIndex, req.body, {new: true})
+        .then(updatedBread => {
+            console.log(updatedBread)
+            res.render('show', {
+                bread: updatedBread
+            })
+        })
 })
 
 module.exports = breads
