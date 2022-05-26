@@ -1,6 +1,7 @@
 const express = require('express')
 const bread = require('../models/bread')
 const breads = express.Router()
+const Baker = require('../models/bakers')
 
 //INDEX
 breads.get('/', (req, res) => {
@@ -15,7 +16,13 @@ breads.get('/', (req, res) => {
 
 //NEW
 breads.get('/new', (req, res) => {
-    res.render('new')
+    Baker.find()
+        .then(foundBakers => {
+            res.render('new', {
+                bakers: foundBakers
+            })
+        })
+
 })
 
 
@@ -52,7 +59,7 @@ breads.get('/:id', (req, res) => {
 breads.post('/', (req, res) => {
     //no image provided on form
     if (!req.body.image) {
-        req.body.image = undefined
+        req.body.image = 'http://placekitten.com/400/400'
     }
     //Gluten checkmark
     if (req.body.hasGluten === 'on') {

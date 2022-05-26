@@ -30,6 +30,10 @@ app.get('/', (req, res) => {
 const breadsController = require('./controllers/breads_controller.js')
 app.use('/breads', breadsController)
 
+//bakers
+const bakersController = require('./controllers/bakers_controller.js')
+app.use('/bakers', bakersController)
+
 app.listen(PORT, () => {
     console.log('nomming at port', PORT)
 })
