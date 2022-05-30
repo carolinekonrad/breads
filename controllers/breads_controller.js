@@ -28,21 +28,26 @@ breads.get('/new', (req, res) => {
 
 //EDIT
 breads.get('/:indexArray/edit', (req, res) => {
+    Baker.find()
+    .then (foundBakers => {
     bread.findById(req.params.indexArray)
         .then(foundBread => {
             res.render('edit', {
-                bread: foundBread
+                bread: foundBread,
+                bakers: foundBakers
             })
         })
         .catch(err => {
             console.log('err', err)
             res.send('404')
         })
+    })
 })
 
 //SHOW
 breads.get('/:id', (req, res) => {
     bread.findById(req.params.id)
+        .populate('baker')
         .then(foundBread => {
             const bakedBy = foundBread.getBakedBy()
             console.log(bakedBy)
